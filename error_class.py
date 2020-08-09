@@ -18,3 +18,12 @@ class wrong_tiles(Exception):
 class empty_board(Exception):
     ''' Board is not initilized '''
     pass
+
+
+class not_implemented(Exception):
+    ''' Function not implemented '''
+    pass
+
+class fatal_error(Exception):
+    ''' If something really really goes wrong... '''
+    pass

@@ -15,16 +15,54 @@ class Board:
         self.board = self.initBoard(self.max_tiles)
         
         # 0 = Computer; 1 = Player
-        self.player_index = 0
-        self.player_choice = 'X'
+        self.computer_index = 0
         
+        
+    
+    def get_legal_actions(self):
+        
+        actions = []
+        
+        for i in range(len(self.board)):
+            if (self.board[i] != 2 or self.board[i] != 1 or self.board[i] == '_'): 
+                actions.append(i)
+        
+        return actions
     
     def make_move(self, action, playerID):
         
+        '''
+        Returns a new board instance updated with made move
+        Inputs: action, what action to take. (An integer, no GUI as of now)
+                playerID, what is the player ID
+        
+        Returns: Updated board object, not modified but updated.
+        '''
+        
         if (self.board == []):
             raise e.empty_board("\nBoard is not initialized")
-            
         
+        legalActions = self.get_legal_actions()
+        
+        print(legalActions)
+        
+        if not action in legalActions:
+            raise e.fatal_error("Something went wrong. Please Restart.")
+            exit()
+        
+        newBoard = Board()
+        if action in legalActions:
+            
+            newBoard.initBoard(self.max_tiles)
+            
+            if playerID == self.computer_index:
+                newBoard.board[action] = 2
+            
+            else:
+                newBoard.board[action] = 1
+    
+        
+        return newBoard
         
     def initBoard(self, max_tiles):
         
@@ -55,7 +93,6 @@ class Board:
         ''' 
         ideally prints tictac format
         '''
-        
         print('\n\n')
         
         if (self.board == []):
@@ -64,14 +101,18 @@ class Board:
         rows = int(self.max_tiles / 3)
         cols = int(self.max_tiles / 3)
         
+        index = 0
+        
         for i in range(0, rows):
             for j in range(0, cols):
                 if (j == (cols - 1)):
                     print ('\t', end = ' ')
-                    print (self.board[i], end =' ')
+                    print (self.board[index], end =' ')
+                    index += 1
                 else:
                     print ('\t', end = ' ')
-                    print (self.board[i], end = ' \t| ')
+                    print (self.board[index], end = ' \t| ')
+                    index += 1
                 
             print()
             
@@ -81,4 +122,10 @@ class Board:
         
 b = Board()
 b.initBoard(9)
-b.display()
+print (b.board)
+
+c = b.make_move(0, 1)
+
+print ("After making a move on 6th position (asperarrays)")
+print (c.board)
+c.display()
