@@ -11,9 +11,20 @@ class Board:
     
     def __init__(self):
         
-        self.board = []
         self.max_tiles = 9
+        self.board = self.initBoard(self.max_tiles)
+        
+        # 0 = Computer; 1 = Player
+        self.player_index = 0
+        self.player_choice = 'X'
+        
     
+    def make_move(self, action, playerID):
+        
+        if (self.board == []):
+            raise e.empty_board("\nBoard is not initialized")
+            
+        
         
     def initBoard(self, max_tiles):
         
@@ -28,26 +39,46 @@ class Board:
         Returns: board array
         '''
         
-        if (max_tiles <= 0):
+        if (max_tiles < 9):
             raise e.wrong_tiles("\n\nAtleast enter a positive number")
         
             
         board = []
         
         for i in range(0, self.max_tiles):
-            board.append(0) 
+            board.append('_') 
         
         return board
     
     
-    def __str__(self):
+    def display(self):
         ''' 
-        Overloading representation of boards, ideally prints tictac format
+        ideally prints tictac format
         '''
         
-        pass
+        print('\n\n')
+        
+        if (self.board == []):
+            raise e.empty_board("\n\nBoard not initiliazed")
+            
+        rows = int(self.max_tiles / 3)
+        cols = int(self.max_tiles / 3)
+        
+        for i in range(0, rows):
+            for j in range(0, cols):
+                if (j == (cols - 1)):
+                    print ('\t', end = ' ')
+                    print (self.board[i], end =' ')
+                else:
+                    print ('\t', end = ' ')
+                    print (self.board[i], end = ' \t| ')
+                
+            print()
+            
+        print('\n\n')
+        
+    
         
 b = Board()
-#b.initBoard(0)
-
-print(b)
+b.initBoard(9)
+b.display()

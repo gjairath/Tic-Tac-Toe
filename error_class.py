@@ -15,4 +15,6 @@ class wrong_tiles(Exception):
     pass
 
 
-    
+class empty_board(Exception):
+    ''' Board is not initilized '''
+    pass
