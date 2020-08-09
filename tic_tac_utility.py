@@ -143,9 +143,9 @@ b = Board()
 b.initBoard(9)
 
 while True:
-    i = input("enter where to put shit")
+    i = input("enter where to put shit: ")
 
-    c = b.make_move(int(i), 1)
+    c = b.make_move(int(i) - 1, 1)
     c.display()
 
     d = c.computer_move()
