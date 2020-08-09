@@ -6,6 +6,7 @@ Created on Sat Aug  8 23:28:33 2020
 """
 
 import error_class as e
+import random
 
 class Board:
     
@@ -24,9 +25,11 @@ class Board:
         actions = []
         
         for i in range(len(self.board)):
-            if (self.board[i] != 2 or self.board[i] != 1 or self.board[i] == '_'): 
+            if (self.board[i] == '_'): 
                 actions.append(i)
-        
+            else:
+                pass
+            
         return actions
     
     def make_move(self, action, playerID):
@@ -45,15 +48,16 @@ class Board:
         legalActions = self.get_legal_actions()
         
         print(legalActions)
+        print(self.board)
         
         if not action in legalActions:
             raise e.fatal_error("Something went wrong. Please Restart.")
             exit()
         
         newBoard = Board()
+        newBoard.board = self.board
+        
         if action in legalActions:
-            
-            newBoard.initBoard(self.max_tiles)
             
             if playerID == self.computer_index:
                 newBoard.board[action] = 2
@@ -89,6 +93,21 @@ class Board:
         return board
     
     
+    def computer_move(self):
+        
+        legalActions = self.get_legal_actions()
+    
+            
+        action = random.choice(legalActions)
+
+        
+        newBoard = self.make_move(action, self.computer_index)
+        
+        newBoard.display()
+        
+    
+    
+    
     def display(self):
         ''' 
         ideally prints tictac format
@@ -122,10 +141,13 @@ class Board:
         
 b = Board()
 b.initBoard(9)
-print (b.board)
 
-c = b.make_move(0, 1)
+while True:
+    i = input("enter where to put shit")
 
-print ("After making a move on 6th position (asperarrays)")
-print (c.board)
-c.display()
+    c = b.make_move(int(i), 1)
+    c.display()
+
+    d = c.computer_move()
+
+
