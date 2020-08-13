@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Created on Sat Aug  8 23:28:33 2020
-
 @author: garvi
 """
 
@@ -150,7 +148,7 @@ class Board:
             else:
                 pass
             
-        return False, -1
+        return False, -69
             
             
     def colUtility(self):
@@ -170,7 +168,7 @@ class Board:
             else:
                 pass
             
-        return False, -1
+        return False, -69
       
     def diagUtility(self):
         
@@ -185,25 +183,25 @@ class Board:
         if (self.board[2] == self.board[4] and self.board[2] == self.board[6] and self.board[2] != '_'):
             return True, self.board[2]
         
-        return False, -1
+        return False, -69
     
 
 
     def miniMax(self, depth, player, board):
-        
-        _, h = self.isTerminal()
-        
-        if (h == 10):
-            return h
-        
-        if (h == -10):
-            return h
-        
+
+        '''
+        This was a really interesting bug, I have coded a poor evalution function and didnt fucking understand
+        Now I do, amazing, I mistakenly put player as '2' and the truth condition always went to false. 
+        As a result, my agent played defensively.
+            I found out about this by doing by classic doubly whammy trick by agressively taking dignol corners
+            The agent almost always lost.
+        '''
         if (depth == 0 or self.isTerminal()[0]):
             _, heurestic = self.isTerminal()
             return heurestic
-        
+
         if (player == True):
+
             value = -10000
             for action in self.get_legal_actions():
 
@@ -212,6 +210,7 @@ class Board:
                 board[action] = '_'
             return value - depth
         else:
+
             value = 100000
             for action in self.get_legal_actions():
                 
@@ -227,19 +226,18 @@ class Board:
         if (self.get_legal_actions() == []):
             print("Draw!")
             exit()
-        
+            
         bestAction = self.get_legal_actions()[0]
  
         for action in self.get_legal_actions():
             board[action] = 2
-            value = self.miniMax(9, True, board)
+            value = self.miniMax(9, 2, board)
             board[action] = '_'
-            print (action, end = '=')
             print(value)
             if value > inf:
                 inf = value
                 bestAction = action
-                
+        
         
         return bestAction
         
@@ -276,21 +274,24 @@ class Board:
 b = Board()
 b.initBoard(9)
 
+print (~-3)
 
 while True:
-
     i = input("Enter where to put Value: ")
-    c = b.makeMove(int(i) - 1, 1)
-    c.display()
+    b.makeMove(int(i) - 1, 1)
+    b.display()
 
-    if (c.isTerminal()[0]): 
+    if (b.isTerminal()[0]): 
         print ("Player wins")
         exit()
+
+    if (b.board == []):
+        print("Draw!")
+        exit()
             
-    c = c.makeMove(c.optimalMove(c.board), 2)
-    c.display()
+    b.makeMove(b.optimalMove(b.board), 2)
+    b.display()
     
-    if (c.isTerminal()[0]):
+    if (b.isTerminal()[0]):
         print("Computer Wins")
         exit()
-
