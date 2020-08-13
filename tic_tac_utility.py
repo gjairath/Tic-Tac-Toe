@@ -17,7 +17,8 @@ class Board:
         
         # 0 = Computer; 1 = Player
         self.computer_index = 0
-        
+        self.rows = [self.board[x:x+3] for x in range(0,len(self.board),3)]
+
         
     
     def get_legal_actions(self):
@@ -136,6 +137,48 @@ class Board:
             print()
             
         print('\n\n')
+
+    def rowUtility(self):
+        
+        '''
+        If all the rows are one value, game has ended.
+        '''
+    
+        subList = [self.board[x:x+3] for x in range(0,len(self.board), 3)]
+        
+        for rows in subList:
+            if (all(element == rows[0] for element in rows) and rows[0] != '_'):
+                return True
+            else:
+                pass
+            
+        return False
+            
+            
+    def colUtility(self):
+        subList = []
+        
+        # First reorganize it row format
+        for i in range(0, 3):
+            for x in range(i,9,3):
+                subList.append(self.board[x])
+        
+        # Reuse previse snippet to sublist it. Genius.
+        subList = [subList[x:x+3] for x in range(0,len(self.board), 3)]
+
+        for cols in subList:
+            if (all(element == cols[0] for element in cols) and cols[0] != '_'):
+                return True
+            else:
+                pass
+            
+        return False  
+      
+    def isTerminal(self):
+        
+        self.colUtility()
+        
+        return (self.rowUtility() or self.colUtility())
         
     
         
@@ -143,11 +186,20 @@ b = Board()
 b.initBoard(9)
 
 while True:
-    i = input("enter where to put shit: ")
+    i = input("Enter where to put Value: ")
 
     c = b.make_move(int(i) - 1, 1)
     c.display()
-
+    
+    if (c.isTerminal()): 
+        print ("Player wins")
+        exit()
+    
     d = c.computer_move()
+    
+    if (c.isTerminal()): 
+        print ("Computer wins")
+        exit()
+    
 
 
