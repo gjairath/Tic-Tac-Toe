@@ -97,10 +97,8 @@ class Board:
     def computer_move(self):
         
         legalActions = self.get_legal_actions()
-    
-            
-        action = random.choice(legalActions)
 
+        action = random.choice(legalActions)
         
         newBoard = self.make_move(action, self.computer_index)
         
@@ -148,11 +146,11 @@ class Board:
         
         for rows in subList:
             if (all(element == rows[0] for element in rows) and rows[0] != '_'):
-                return True
+                return True, rows[0]
             else:
                 pass
             
-        return False
+        return False, -1
             
             
     def colUtility(self):
@@ -168,19 +166,50 @@ class Board:
 
         for cols in subList:
             if (all(element == cols[0] for element in cols) and cols[0] != '_'):
-                return True
+                return True, cols[0]
             else:
                 pass
             
-        return False  
+        return False, -1
       
+    def diagUtility(self):
+        
+        # I simply did the above stuff for fun, I dont think I needed to do this, I could just do basic
+        # Partioning. Here, it seems crazily overkill sooo
+        # I simply did the above stuff for fun, I dont think I needed to do this, I could just do basic
+        # Partioning. Here, it seems crazily overkill sooo
+        
+        if (self.board[0] == self.board[4] and self.board[0] == self.board[8] and self.board[0] != '_'):
+            return True, self.board[0]
+        
+        if (self.board[2] == self.board[4] and self.board[2] == self.board[6] and self.board[2] != '_'):
+            return True, self.board[2]
+        
+        return False, -1
+    
+
+    
     def isTerminal(self):
         
-        self.colUtility()
+        if (self.get_legal_actions() == []):
+            print("Draw!")
+               
+        isRows, _ = self.rowUtility()
+        isCols, _ = self.colUtility()
+        isDiag, _ = self.diagUtility()
         
-        return (self.rowUtility() or self.colUtility())
+        if (isRows): 
+            print("{} Wins!".format(self.rowUtility()[1]))
+            return True
+        if (isCols): 
+            print("{} Wins!".format(self.colUtility()[1]))
+            return True
+        if (isDiag): 
+            print("{} Wins!".format(self.diagUtility()[1]))
+            return True
         
-    
+        
+        return False
         
 b = Board()
 b.initBoard(9)
@@ -192,13 +221,11 @@ while True:
     c.display()
     
     if (c.isTerminal()): 
-        print ("Player wins")
         exit()
     
     d = c.computer_move()
     
     if (c.isTerminal()): 
-        print ("Computer wins")
         exit()
     
 
