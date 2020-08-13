@@ -150,7 +150,7 @@ class Board:
             else:
                 pass
             
-        return False, -69
+        return False, -1
             
             
     def colUtility(self):
@@ -170,7 +170,7 @@ class Board:
             else:
                 pass
             
-        return False, -69
+        return False, -1
       
     def diagUtility(self):
         
@@ -185,32 +185,40 @@ class Board:
         if (self.board[2] == self.board[4] and self.board[2] == self.board[6] and self.board[2] != '_'):
             return True, self.board[2]
         
-        return False, -69
+        return False, -1
     
 
 
     def miniMax(self, depth, player, board):
 
-        if (depth == 0 or self.isTerminal()[0]):
-            _, heurestic = self.isTerminal()
+        _, heurestic = self.isTerminal()
+        
+        if (heurestic == 10):
             return heurestic
+        
+        if (heurestic == -10):
+            return heurestic
+    
+        
+        if (self.get_legal_actions() == []):
+            return 0
         
         if (player == True):
             value = -10000
             for action in self.get_legal_actions():
 
                 board[action] = 2
-                value = max(value, self.miniMax(depth - 1 , ~player, board))  
+                value = max(value, self.miniMax(depth + 1 , ~player, board))  
                 board[action] = '_'
-            return value - depth
+            return value 
         else:
             value = 100000
             for action in self.get_legal_actions():
                 
                 board[action] = 1
-                value = min(value, self.miniMax(depth - 1 , ~player, board))
+                value = min(value, self.miniMax(depth + 1 , ~player, board))
                 board[action] = '_'
-            return value + depth
+            return value 
         
     def optimalMove(self, board):
         
@@ -219,18 +227,17 @@ class Board:
         if (self.get_legal_actions() == []):
             print("Draw!")
             exit()
-            
+        
         bestAction = self.get_legal_actions()[0]
  
         for action in self.get_legal_actions():
             board[action] = 2
-            value = self.miniMax(9, 2, board)
+            value = self.miniMax(0, 2, board)
             board[action] = '_'
             print(value)
             if value > inf:
                 inf = value
                 bestAction = action
-        
         
         return bestAction
         
@@ -269,16 +276,13 @@ b.initBoard(9)
 
 
 while True:
+
     i = input("Enter where to put Value: ")
     b.makeMove(int(i) - 1, 1)
     b.display()
 
     if (b.isTerminal()[0]): 
         print ("Player wins")
-        exit()
-
-    if (b.board == []):
-        print("Draw!")
         exit()
             
     b.makeMove(b.optimalMove(b.board), 2)
