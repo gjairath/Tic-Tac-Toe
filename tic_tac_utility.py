@@ -16,7 +16,7 @@ class Board:
         self.board = self.initBoard(self.max_tiles)
         
         # 0 = Computer; 1 = Player
-        self.computer_index = 0
+        self.computer_index = 2
         self.rows = [self.board[x:x+3] for x in range(0,len(self.board),3)]
 
         
@@ -33,7 +33,7 @@ class Board:
             
         return actions
     
-    def make_move(self, action, playerID):
+    def makeMove(self, action, playerID):
         
         '''
         Returns a new board instance updated with made move
@@ -48,8 +48,6 @@ class Board:
         
         legalActions = self.get_legal_actions()
         
-        print(legalActions)
-        print(self.board)
         
         if not action in legalActions:
             raise e.fatal_error("Something went wrong. Please Restart.")
@@ -57,6 +55,8 @@ class Board:
         
         newBoard = Board()
         newBoard.board = self.board
+        
+        self.display()
         
         if action in legalActions:
             
@@ -94,18 +94,43 @@ class Board:
         return board
     
     
-    def computer_move(self):
+    def computerRandomMove(self):
         
         legalActions = self.get_legal_actions()
 
         action = random.choice(legalActions)
         
-        newBoard = self.make_move(action, self.computer_index)
+        newBoard = self.makeMove(action, self.computer_index)
         
         newBoard.display()
         
+
+    def miniMax(self, child, depth, player, board):
+
+        if (depth == 0 or self.isTerminal()[0]):
+            _, heurestic = self.isTerminal()
+            return heurestic
+        
+        if (player == True):
+            value = -10000
+            for action in self.get_legal_actions():
+                self.display()
+                board[action] = 2
+                value = max(value, self.miniMax(self.board, depth - 1 , ~player, board))  
+                board[action] = '_'
+            return value
+        else:
+            value = 100000
+            for action in self.get_legal_actions():
+                self.display()
+
+                board[action] = 1
+                value = min(value, self.miniMax(self.board, depth - 1 , ~player, board))
+                board[action] = '_'
+            return value
+        
     
-    
+        
     
     def display(self):
         ''' 
@@ -130,7 +155,7 @@ class Board:
                 else:
                     print ('\t', end = ' ')
                     print (self.board[index], end = ' \t| ')
-                    index += 1
+                    index += 1 
                 
             print()
             
@@ -191,42 +216,39 @@ class Board:
     
     def isTerminal(self):
         
-        if (self.get_legal_actions() == []):
-            print("Draw!")
-               
         isRows, _ = self.rowUtility()
         isCols, _ = self.colUtility()
         isDiag, _ = self.diagUtility()
         
+        
+        
         if (isRows): 
             print("{} Wins!".format(self.rowUtility()[1]))
-            return True
+            if (self.rowUtility()[1] == 2):
+                return True, +1
+            else:
+                return True, -1
+
         if (isCols): 
             print("{} Wins!".format(self.colUtility()[1]))
-            return True
+            if (self.colUtility()[1] == 2):
+                return True, +1
+            else:
+                return True, -1
+
         if (isDiag): 
             print("{} Wins!".format(self.diagUtility()[1]))
-            return True
+            if (self.diagUtility()[1] == 2):
+                return True, +1
+            else:
+                return True, -1
+    
         
-        
-        return False
+        return False, 0
         
 b = Board()
 b.initBoard(9)
 
-while True:
-    i = input("Enter where to put Value: ")
+print(b.miniMax(b, 9, True, b.board))
 
-    c = b.make_move(int(i) - 1, 1)
-    c.display()
     
-    if (c.isTerminal()): 
-        exit()
-    
-    d = c.computer_move()
-    
-    if (c.isTerminal()): 
-        exit()
-    
-
-
