@@ -54,7 +54,7 @@ class Board:
         newBoard = Board()
         newBoard.board = self.board
         
-        self.display()
+        #self.display()
         
         if action in legalActions:
             
@@ -98,9 +98,10 @@ class Board:
 
         action = random.choice(legalActions)
         
-        newBoard = self.makeMove(action, self.computer_index)
+        newBoard = self.makeMove(action, 1)
         
-        newBoard.display()
+        return newBoard
+        #newBoard.display()
         
     
         
@@ -189,51 +190,54 @@ class Board:
 
     def miniMax(self, depth, player, board):
 
+        ''' 
+        Something is wrong here
         '''
-        This was a really interesting bug, I have coded a poor evalution function and didnt fucking understand
-        Now I do, amazing, I mistakenly put player as '2' and the truth condition always went to false. 
-        As a result, my agent played defensively.
-            I found out about this by doing by classic doubly whammy trick by agressively taking dignol corners
-            The agent almost always lost.
-        '''
-        if (depth == 0 or self.isTerminal()[0]):
-            _, heurestic = self.isTerminal()
-            return heurestic
+     
+        h = self.heuristic()
+        
+        if (self.isTerminal()):
+            return h
+        
+
+        if (self.get_legal_actions() == []):
+            return 0
+     
 
         if (player == True):
 
             value = -10000
-            for action in self.get_legal_actions():
-
-                board[action] = 2
-                value = max(value, self.miniMax(depth - 1 , ~player, board))  
-                board[action] = '_'
-            return value - depth
+            for item in range(0,9):
+                if (self.board[item] == '_'):
+                    self.board[item] = 2
+                    value = max(value, self.miniMax(depth + 1 , False, self.board))
+                    self.board[item] = '_'
+            return value 
+        
         else:
-
-            value = 100000
-            for action in self.get_legal_actions():
-                
-                board[action] = 1
-                value = min(value, self.miniMax(depth - 1 , ~player, board))
-                board[action] = '_'
-            return value + depth
+            value = +10000
+            for item in range(0,9):
+                if (self.board[item] == '_'):
+                    self.board[item] = 1
+                    value = min(value, self.miniMax(depth + 1 , True, self.board))
+                    self.board[item] = '_'
+            return value 
+            
         
     def optimalMove(self, board):
         
         inf = -100
         
         if (self.get_legal_actions() == []):
-            print("Draw!")
-            exit()
+            return -1
             
         bestAction = self.get_legal_actions()[0]
- 
+
         for action in self.get_legal_actions():
-            board[action] = 2
-            value = self.miniMax(9, 2, board)
-            board[action] = '_'
-            print(value)
+            self.board[action] = 2
+            value = self.miniMax(0, False, self.board)
+            self.board[action] = '_'
+           #print(value)
             if value > inf:
                 inf = value
                 bestAction = action
@@ -242,7 +246,8 @@ class Board:
         return bestAction
         
     
-    def isTerminal(self):
+    
+    def heuristic(self):
         
         isRows, _ = self.rowUtility()
         isCols, _ = self.colUtility()
@@ -252,46 +257,67 @@ class Board:
         
         if (isRows): 
             if (self.rowUtility()[1] == 2):
-                return True, +10
+                return +10
             else:
-                return True, -10
+                return -10
 
         if (isCols): 
             if (self.colUtility()[1] == 2):
-                return True, +10
+                return +10
             else:
-                return True, -10
+                return -10
 
         if (isDiag): 
             if (self.diagUtility()[1] == 2):
-                return True, +10
+                return +10
             else:
-                return True, -10
+                return -10
     
 
-        return False, 0
+        return 0
+    
+    def isTerminal(self):
         
-b = Board()
-b.initBoard(9)
+        isRows, _ = self.rowUtility()
+        isCols, _ = self.colUtility()
+        isDiag, _ = self.diagUtility()
+        
+        
+        
+        return (isRows or isCols or isDiag)
+        
 
-print (~-3)
+c = 0
+c1 = 0
 
-while True:
-    i = input("Enter where to put Value: ")
-    b.makeMove(int(i) - 1, 1)
-    b.display()
-
-    if (b.isTerminal()[0]): 
-        print ("Player wins")
-        exit()
-
-    if (b.board == []):
-        print("Draw!")
-        exit()
-            
-    b.makeMove(b.optimalMove(b.board), 2)
-    b.display()
+for i in range(0,10):
+    b = Board()
+    b.initBoard(9)
+    while True:
+        #i = input("Enter where to put Value: ")
+        #b.makeMove(int(i) - 1, 1)
+        b.computerRandomMove()
+        #b.display()
     
-    if (b.isTerminal()[0]):
-        print("Computer Wins")
-        exit()
+        if (b.isTerminal()): 
+            #print ("Player wins")
+            c += 1
+            break
+            #exit()
+    
+       
+        if (b.optimalMove(b.board) == -1): break
+        b.makeMove(b.optimalMove(b.board), 2)
+        #b.display()
+        
+        if (b.isTerminal()):
+            #print("Computer Wins")
+            c1 += 1
+            break
+            #exit()
+
+print ("Random choice victores", end = ' ')
+print (c)
+
+print ("Computer choice victories: ", end = ' ')
+print (c1)
