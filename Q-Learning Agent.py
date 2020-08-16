@@ -6,7 +6,10 @@ Created on Sat Aug 15 21:21:15 2020
 """
 
 from testing_env import Board
-
+import numpy as np
+win = 1.0
+draw = 0.5
+loss = 0.0
  
 class QLearning:
     
@@ -17,7 +20,7 @@ class QLearning:
         self.initVals = 0.5
         self.mdp = []
         
-        self.computer_index = 2 
+        self.computer_index = 1
         
     
     def getQ(self, board):
@@ -42,9 +45,10 @@ class QLearning:
         '''
         qVals = self.getQ(board)
         #print(optimalMove)
-        print(board.get_legal_actions())
+        #print(board.get_legal_actions())
         while True:
-            optimalMove = qVals.index(max(qVals))
+            
+            optimalMove = np.argmax(qVals)
             if optimalMove in board.get_legal_actions():
                 return optimalMove
             else:
@@ -56,61 +60,138 @@ class QLearning:
         Inputs: board, state config
         Returns: board, after move made and appends it to our Markov Decision Policy
         '''
-        #print(self.q)
         optimalMove = self.getOptimalMove(board)
-        #print(optimalMove)
-        #print(board)
-        newBoard = board.makeMove(optimalMove, self.computer_index)
         self.mdp.append((board, optimalMove))
+  
+        newBoard = board.makeMove(optimalMove, self.computer_index)
         return newBoard
     
     
     def UpdateQ(self, board):
         
-        value = board.heuristic() # +10 if computer has won; -10 if computer has lost; 0 if we have drawn.
-        value = value / 10 #Normalize values to single digit for convineice.
+        value = board.heuristic() 
+
+        if (value == 10): value = -1.0
         if (value == 0): value = 0.5
-        nextState = 0
+        if (value == -10): value = +1.0
+        nextState = -1.0
         self.mdp.reverse()
+ 
+        #print(self.mdp)
         for tuples in self.mdp:
-            #tuples[0] is the last board
-            #tuples[1] is the move taken to get there
+            
             arrayVals = self.getQ(tuples[0])
-            if (nextState == 0): nextState = value
-            arrayVals[tuples[1]] = (1 - self.alpha) * arrayVals[tuples[1]] + self.alpha * self.discount * nextState
+            if nextState < 0:  # First time through the loop
+                arrayVals[tuples[1]] = value
+            else:
+                arrayVals[tuples[1]] = arrayVals[tuples[1]] * (1.0 - self.alpha) + self.alpha * self.discount * nextState
+
+            self.q[board] = arrayVals            
             nextState = max(arrayVals)
         
-        print(self.q)
-
+        i = 0
+        for key in self.q:
+            print (i)
+            print (self.q[key], end = '\t')
+            key.display()
+            i += 1
+        print (self.q)
+       
+    def newGame(self):
+        self.mdp = []
 
 qAgent = QLearning()
-def train():
-    b = Board()
-    b.initBoard(9)
+
+
+from copy import deepcopy
+
+def train_random():
+    random = 0
+    sexy = 0
     for i in range(0,100000):
+        b = Board()
+        b.initBoard(9)
+
         while True:
             
             if (b.get_legal_actions() == []):
                 qAgent.UpdateQ(b)
                 break
             
-            newBoard = b.computerRandomMove()
+            newBoard = deepcopy(b.computerRandomMove())
+            #newBoard = deepcopy(b.makeMove(b.optimalMove(b.board), 2))
+
+            if (b.isTerminal()): 
+                qAgent.UpdateQ(b)
+                random += 1
+                break
+               
+            #newBoard.display()
+            if (newBoard.get_legal_actions() == []): 
+                break
+            newBoard2 = deepcopy(qAgent.makeMove(newBoard))
+
+            b = newBoard2
+            
+            if (b.isTerminal()):
+                sexy += 1
+                qAgent.UpdateQ(b)
+                break
+    print ("Random has wins: ", end = ' ')
+    print(random)
+    
+    print ("Q Agent has wins ", end = ' ')
+    print(sexy)
+
+def train_minimax():
+    random = 0
+    sexy = 0
+    for i in range(0,10):
+        b = Board()
+        b.initBoard(9)
+        qAgent.newGame()
+
+        while True:
+            
+            if (b.get_legal_actions() == []):
+                qAgent.UpdateQ(b)
+                break
+            
+            b.display()
+            qAgent.makeMove(b)
+            b.display()
             
             if (b.isTerminal()): 
                 qAgent.UpdateQ(b)
+                random += 1
                 break
                
-            qAgent.makeMove(newBoard)
-            newBoard.display()
-                
+            #newBoard.display()
+            if (b.get_legal_actions() == []): 
+                break
+            
+            b.makeMove(b.optimalMove(b.board), 2)
+
+            b.display()
+            
             if (b.isTerminal()):
+                sexy += 1
                 qAgent.UpdateQ(b)
                 break
+            
+    print ("Q Agent has wins: ", end = ' ')
+    print(random)
+    
+    print ("Minimax has wins ", end = ' ')
+    print(sexy)
         
 def play():
+
         b = Board()
         b.initBoard(9)
         while True:
+            print("\n Len of ")
+            print(len(qAgent.q))
             i = input("Enter where to put Value: ")
             newBoard = b.makeMove(int(i) - 1, 1)
             newBoard.display()
@@ -131,5 +212,5 @@ def play():
                 qAgent.UpdateQ(b)
                 break
             
-train()
-play()
+train_minimax()
+#play()
