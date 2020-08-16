@@ -284,38 +284,71 @@ class Board:
         
         return (isRows or isCols or isDiag)
         
-
-c = 0
-c1 = 0
-
-for i in range(0,10):
-    b = Board()
-    b.initBoard(9)
-    while True:
-        #i = input("Enter where to put Value: ")
-        #b.makeMove(int(i) - 1, 1)
-        b.computerRandomMove()
-        #b.display()
+def simulate(games = 1):
+    c = 0
+    c1 = 0
     
-        if (b.isTerminal()): 
-            #print ("Player wins")
-            c += 1
-            break
-            #exit()
-    
-       
-        if (b.optimalMove(b.board) == -1): break
-        b.makeMove(b.optimalMove(b.board), 2)
-        #b.display()
+    for i in range(0, games):
+        b = Board()
+        b.initBoard(9)
+        while True:
+            #i = input("Enter where to put Value: ")
+            #b.makeMove(int(i) - 1, 1)
+            b.computerRandomMove()
+            #b.display()
         
-        if (b.isTerminal()):
-            #print("Computer Wins")
-            c1 += 1
-            break
-            #exit()
+            if (b.isTerminal()): 
+                #print ("Player wins")
+                c += 1
+                break
+                #exit()
+        
+           
+            if (b.optimalMove(b.board) == -1): break
+            b.makeMove(b.optimalMove(b.board), 2)
+            #b.display()
+            
+            if (b.isTerminal()):
+                #print("Computer Wins")
+                c1 += 1
+                break
+                #exit()
+    
+    print("Games Run: ", end = ' ')
+    print (games)
+    print ("For Games Random choice victores: ", end = ' ')
+    print (c)
+    
+    print ("Computer choice victories: ", end = ' ')
+    print (c1)
+    
 
-print ("Random choice victores: ", end = ' ')
-print (c)
+def play():
+        b = Board()
+        b.initBoard(9)
+        while True:
+            i = input("Enter where to put Value: ")
+            b.makeMove(int(i) - 1, 1)
+            b.display()
+        
+            if (b.isTerminal()): 
+                print ("Player wins")
+                exit()
+        
+           
+            if (b.optimalMove(b.board) == -1): 
+                print ("Draw")
+                exit()
+                
+            b.makeMove(b.optimalMove(b.board), 2)
+            b.display()
+            
+            if (b.isTerminal()):
+                print("Computer Wins")
+                exit()
 
-print ("Computer choice victories: ", end = ' ')
-print (c1)
+print ('\n\n\n')
+simulate(games = 1)
+
+print('\n\n\n')
+play()
