@@ -175,8 +175,6 @@ class Board:
         
         # I simply did the above stuff for fun, I dont think I needed to do this, I could just do basic
         # Partioning. Here, it seems crazily overkill sooo
-        # I simply did the above stuff for fun, I dont think I needed to do this, I could just do basic
-        # Partioning. Here, it seems crazily overkill sooo
         
         if (self.board[0] == self.board[4] and self.board[0] == self.board[8] and self.board[0] != '_'):
             return True, self.board[0]
@@ -316,7 +314,7 @@ for i in range(0,10):
             break
             #exit()
 
-print ("Random choice victores", end = ' ')
+print ("Random choice victores: ", end = ' ')
 print (c)
 
 print ("Computer choice victories: ", end = ' ')
