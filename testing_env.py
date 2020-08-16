@@ -48,7 +48,9 @@ class Board:
         
         
         if not action in legalActions:
-            raise e.fatal_error("Something went wrong. Please Restart.")
+            #raise e.fatal_error("Something went wrong. Please Restart.")
+            print("action that caused issues:")
+            print (action)
             exit()
         
         newBoard = Board()
@@ -348,7 +350,7 @@ def play():
                 exit()
 
 print ('\n\n\n')
-simulate(games = 1)
+#simulate(games = 1)
 
-print('\n\n\n')
-play()
+#print('\n\n\n')
+#play()
