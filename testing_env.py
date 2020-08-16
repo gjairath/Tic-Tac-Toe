@@ -100,7 +100,7 @@ class Board:
 
         action = random.choice(legalActions)
         
-        newBoard = self.makeMove(action, 1)
+        newBoard = self.makeMove(action, 2)
         
         return newBoard
         #newBoard.display()
